@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>CPU Schdeuling Algorithms</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 700px;
+        background: linear-gradient(to bottom, #51ff3387 0%, #9c99ffba 100%);
+       
+      }
+      .menu {
+        display: flex;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #33ccff00 0%, #ff99cc00 100%);
+        box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2);
+
+      }
+
+      .menu ul {
+        list-style: none;
+        display: flex;
+        float: right;
+        letter-spacing: 1px;
+        margin-right: 0.5vw;
+      }
+      .menu ul li {
+        text-decoration: none;
+        margin-left: 0.5vw;
+
+        color: rgb(7, 7, 7);
+      }
+      .menu ul li a {
+        float: left;
+        display: block;
+        color: #000000;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+      }
+      .menu ul li a:hover {
+        background-color: rgba(105, 105, 105, 0.199);
+        color: black;
+      }
+      .menu ul li a.active {
+        background-color: #04aa6d;
+        color: white;
+      }
+      .card1 {
+        width: 30%;
+        height: 100%;
+      background-color: #3e3e3e36;
+        border: solid 2px rgba(35, 35, 35, 0.249);
+        border-radius: 15px;
+        padding-left: 3%;
+        padding-top: 3%;
+        display: flex;
+        flex-direction: column; 
+        box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2);
+           
+        border-radius: 5px;
+        backdrop-filter: blur(1px);
+        background-color:rgb(255 255 255 / 0%);
+      }
+      #solution_btn {
+        margin-top: 15px;
+        /* align-items: center; */
+        /* justify-items: center; */
+        padding: 6px;
+        color: black;
+        background-color: #d3cbcb4a;
+        border: 2px solid black;
+        border-radius: 9px;
+        width: 25%;
+      }
+
+      .card2 {
+        
+        border: solid 2px aquamarine;
+        border-radius: 15px;
+
+        height: 100%;
+        width: 70%;
+        padding-top: 3%;
+        overflow: scroll;
+        box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2);
+           
+        border-radius: 5px;
+        backdrop-filter: blur(1px);
+        background-color: rgb(255 255 255 / 0%);
+
+        display: none;
+      }
+      .card {
+        margin-top: 0px;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+       
+           
+      }
+
+      .property {
+        display: none;
+      }
+
+      .gantboxes {
+        width: 100%;
+        height: max-content;
+      }
+      #ganttbox {
+        display: flex;
+        padding: 0px;
+        margin: 0px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #ganttbox2 {
+        display: flex;
+        padding: 0px;
+        margin: 0;
+        justify-content: center;
+        align-items: center;
+        margin-left: 35px;
+      }
+
+      #box1 {
+        width: 40px;
+        height: 35px;
+        border: 1px solid rgb(141, 166, 255);
+        background-color: rgb(237, 244, 255);
+        color: rgb(66, 66, 66);
+
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+      }
+
+      #box2 {
+        width: 40px;
+        height: 35px;
+        border: 1px solid white(255, 255, 255);
+        
+        color: rgb(0, 0, 0);
+
+        display: flex;
+      }
+
+      .queue {
+        width: 100%;
+        height: max-content;
+        margin-left: 70px;
+        
+        border-radius: 3px;
+        padding: 20px;
+      }
+      #readyQueue {
+        display: flex;
+        padding: 0px;
+        margin: 0px;
+        width: max-content;
+        height: 35px;
+        margin-bottom: 35px;
+        background-color: aquamarine;
+      }
+
+      #runningQueue {
+        display: flex;
+        padding: 0px;
+        margin: 0px;
+        margin-bottom: 10px;
+      }
+
+      #runQueueProcess {
+        display: flex;
+        padding: 0px;
+        margin: 0px;
+      }
+
+      #rbox1 {
+        width: 40px;
+        height: 35px;
+
+        background-color: rgb(36, 113, 237);
+        color: rgb(66, 66, 66);
+
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        position: relative;
+      }
+      #rbox2 {
+        width: 40px;
+        height: 35px;
+
+        margin-left: 0px;
+        color: rgb(40, 33, 33);
+      }
+
+      #rbox3 {
+        width: 40px;
+        height: 35px;
+        border: 1px solid black;
+        background-color: rgb(64, 194, 38);
+        color: rgb(0, 0, 0);
+      }
+
+      #cntdwn {
+        border: 2px double rgb(0 0 0);
+        padding: 10px;
+        /* margin: 2px; */
+        
+        color: #fffdfd;
+        /* margin-left: 20px; */
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        margin-top: 67px;
+        height: 40px;
+        text-align: center;
+      }
+      label {
+        text-decoration: solid;
+        text-shadow: 4px black;
+      }
+      .gantchart {
+        margin-top: -7px;
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .cntdwn_queue {
+        display: flex;
+        /* flex-direction: row-reverse; */
+        margin-top: -20px;
+        padding: 15px;
+      }
+      .input_h {
+        margin-top: 15px;
+        width: 80%;
+      }
+      .input_text {
+        border: 1px solid black;
+        border-radius: 4px;
+        box-shadow: 2px 2px #858585;
+        width: 80%;
+        height: 22px;
+        text-size-adjust: auto;
+        padding: 2px;
+      }
+      
+      .logo{
+        width: 50%;
+      
+      }
+      .div_li{
+      width: 50%;
+      }
+
+   
+   
+   
+
+    table,td,th{
+      border: 2px solid black;
+      border-collapse: collapse;
+      text-align: center;
+    
+  }
+  
+  th{
+      padding: 10px;
+  }
+  .avg{
+    margin-left: 5px;
+    margin-top: 2px;
+  }
+  .tab_dib{
+    margin-top: 70px;
+  }
+ 
+  
+    </style>
+    <script src="js/jquery-3.6.1.js"></script>
+  </head>
+  <body>
+    <div class="menu">
+      <div class="logo">
+       
+
+      </div>
+      <div class="div_li">
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Algorithms</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    </div>
+
+    <div class="card">
+      <div class="card1" id="card1">
+        <h2>Input</h2>
+        <h4 class="input_h">Algorithm</h4>
+
+        <select
+          name="algoInput"
+          id="algoInput"
+          class="input_text"
+          onchange="test()"
+        >
+          <option selected="selected">Select Algorithm</option>
+          <option id="fcfs" value="fcfs">FCFS(First come first serve)</option>
+          <option id="priority_nonpre" value="prioity_nonpre">
+            Prioity(non-preemptive)
+          </option>
+          <option id="priority" value="prioity">Prioity(preemptive)</option>
+        </select>
+        <h4 class="input_h" id="nop">Number Of Processes</h4>
+        <input
+          type="text"
+          class="input_text"
+          id="nop_input"
+          placeholder=" 0 "
+        />
+
+        <h4 class="input_h">Arrival Times</h4>
+        <input
+          type="text"
+          class="input_text"
+          id="arrival_time"
+          placeholder=" 0 0 0 0 "
+        />
+
+        <h4 class="input_h">Burst Times</h4>
+        <input
+          type="text"
+          class="input_text"
+          id="burst_time"
+          placeholder=" 0 0 0 0 "
+        />
+
+        <h4 id="priority1" class="property input_h" style="margin-bottom: 10px">
+          Prioity
+        </h4>
+        <input
+          id="priority2"
+          class="property input_text"
+          type="text"
+          placeholder="Priority"
+        />
+
+        <button id="solution_btn" onclick="fun()">Solution</button>
+      </div>
+
+      <div class="card2" id="card2">
+        <h2 class="gantchart">GANTT CHART</h2>
+
+        <div class="gantboxes">
+          <div id="ganttbox" class="ganttbox"></div>
+
+          <div id="ganttbox2" class="ganttbox2"></div>
+        </div>
+
+        <div class="cntdwn_queue">
+          <h1 id="cntdwn"></h1>
+
+          <div class="queue">
+            <label for="readyQueue">Ready Queue</label>
+            <div id="readyQueue" class="readyQueue"></div>
+            <label for="runQueueProcess">Running Queue</label>
+            <div id="runQueueProcess"></div>
+            <div id="runningQueue" class="runningQueue"></div>
+          </div>
+        </div>
+
+        <div class="tab_dib">
+        <table  id="tab">
+
+          <thead>
+              <thead>
+                  <tr>
+                    <th>Arrival Time</th>
+                    <th>Burst Time</th>
+                    <th>Finish Time</th>
+                    <th>TurnAround Time</th>
+                    <th>Waiting Time</th>
+                    
+  
+                  </tr>
+          </thead>
+  
+      </table>
+     
+<br>
+      <p >TurnAround Time = Finish Time-Arrival Time
+      <br>
+     Waiting Time = TurnAround Time-Burst Time</p>
+     <br>
+    
+    </div>
+
+    <div>
+      <p class="avg" id="wa_t"></p>
+      
+      <p class="avg" id="wa_tat"></p>
+    </div>
+
+      </div>
+    </div>
+   
+     
+ </div>
+
+
+    <script>
+      var temp = 0;
+      var isPaused = false;
+      var tat=[];
+      var wt=[];
+      
+
+      function test() {
+        var algo = algoInput[algoInput.selectedIndex].id;
+        if (algo === "fcfs") {
+          document.getElementById("priority1").style.display = "none";
+          document.getElementById("priority2").style.display = "none";
+        }
+        if (algo === "priority") {
+          document.getElementById("priority1").style.display = "block";
+          document.getElementById("priority2").style.display = "block";
+        }
+        if (algo === "priority_nonpre") {
+          document.getElementById("priority1").style.display = "block";
+          document.getElementById("priority2").style.display = "block";
+        }
+      }
+var new_count=0;
+      function calculate() {
+        var numOfProcess = parseInt(document.getElementById("nop_input").value);
+
+        var arrivalTimes = document.getElementById("arrival_time").value;
+        var arrivalArray = arrivalTimes.split(" ");
+
+        var burstTimes = document.getElementById("burst_time").value;
+        var burstArray = burstTimes.split(" ");
+
+        var priority_ = document.getElementById("priority2").value;
+        var priority = priority_.split(" ");
+
+        var s = 0;
+
+        sort(arrivalArray, burstArray, numOfProcess);
+       
+      }
+      var table = document.getElementById('tab');
+      var tbody= document.createElement("tbody");
+      
+     
+
+      
+        
+
+      function generateTable(at,bt,ft,tat,wt) {
+        var n = parseInt(document.getElementById("nop_input").value);
+
+
+
+
+     while (tbody.hasChildNodes()) {
+          if (tbody.hasChildNodes()) {
+            tbody.removeChild(tbody.firstChild);
+          }
+        }
+        
+       for(var c=0;c<n;c++){
+     
+        
+    
+        var tr=document.createElement('tr');
+      
+
+        for(var r=0;r<5;r++){
+
+          var td=document.createElement('td');
+          
+    
+    
+          if(r==0){
+          var text =document.createTextNode(at[c]);
+          td.appendChild(text);
+          tr.appendChild(td);
+          td.className="td_class";
+          }
+          if(r==1){
+    
+          var text =document.createTextNode(bt[c]);
+          td.appendChild(text);
+          tr.appendChild(td);
+         
+          td.className="td_class";
+          }
+          if(r==2){
+    
+    
+            var text =document.createTextNode(ft[c]);
+            td.appendChild(text);
+           
+            tr.appendChild(td);
+          td.className="td_class";
+          }
+          if(r==3){
+    
+    
+            var text =document.createTextNode(tat[c]);
+            td.appendChild(text);
+            tr.appendChild(td);
+        
+          td.className="td_class";
+          }
+          if(r==4){
+    
+    
+            var text =document.createTextNode(wt[c]);
+            td.appendChild(text);
+            tr.appendChild(td);
+         
+          td.className="td_class";
+          }
+        
+    
+          
+          
+        }
+        table.appendChild(tbody);
+    tbody.appendChild(tr);
+  
+   
+       }
+
+    
+    
+    
+    
+    
+    }
+    
+
+      function sort(at, bt, n) {
+        var rank = [];
+
+        for (var i = 1; i <= n; i++) {
+          rank.push(i);
+        }
+
+        for (var i = 0; i < n; i++) {
+          at[i] = parseInt(at[i]);
+          bt[i] = parseInt(bt[i]);
+          priority[i]=parseInt(priority[i]);
+        }
+
+        for (var i = 0; i < n; i++) {
+          for (var j = i + 1; j < n; j++) {
+            if (at[i] > at[j]) {
+              temp = at[i];
+              at[i] = at[j];
+              at[j] = temp;
+
+              temp = bt[i];
+              bt[i] = bt[j];
+              bt[j] = temp;
+
+              temp = rank[i];
+              rank[i] = rank[j];
+              rank[j] = temp;
+            }
+          }
+        }
+
+        var ft = [];
+        ft[0] = at[0] + bt[0];
+        for (var i = 1; i < n; i++) {
+          if (at[i] <= ft[i - 1]) {
+            ft[i] = ft[i - 1] + bt[i];
+          } else {
+            ft[i] = at[i] + bt[i];
+          }
+        }
+
+        console.log(rank);
+
+
+
+
+
+
+        gant(at, bt, ft, rank);
+        timerPart(at, bt, ft, rank);
+        tat_wt(at,bt,ft);
+        
+
+      
+        
+      }
+      
+      var count=0;
+      function tat_wt(at,bt,ft){
+        var avg_wt=0;
+      var avg_tat=0;
+      var avg_wt_s=0;
+      var avg_tat_s=0;
+        var n = parseInt(document.getElementById("nop_input").value);
+
+        for(var i=0;i<n;i++){
+          
+        
+        tat[i]=ft[i]-at[i]; 
+        wt[i]=tat[i]-bt[i];
+        avg_wt_s=avg_wt_s+wt[i];
+        avg_tat_s=avg_tat_s+tat[i];
+
+        }
+
+       generateTable(at,bt,ft,tat,wt);
+       
+      
+       
+        avg_wt=avg_wt_s/n;
+        avg_tat=avg_tat_s/n;
+        avg_wt=parseFloat( avg_wt).toFixed(2);
+        avg_tat=parseFloat(avg_tat).toFixed(2);
+        document.getElementById("wa_t").innerHTML="avg waiting time = "+avg_wt;
+        document.getElementById("wa_tat").innerHTML="avg turnaround time = "+avg_tat;
+
+      }
+      var rnk=[];
+
+
+
+      function npp(){
+        var n = parseInt(document.getElementById("nop_input").value);
+
+        var arrivalTimes = document.getElementById("arrival_time").value;
+        var at = arrivalTimes.split(" ");
+
+        var burstTimes = document.getElementById("burst_time").value;
+        var bt = burstTimes.split(" ");
+
+        var priority_ = document.getElementById("priority2").value;
+        var priority = priority_.split(" ");
+
+
+
+  var p=[];
+  var avg_turnaround_time;
+  var avg_waiting_time;
+  var avg_response_time;
+  var cpu_utilisation;
+  var total_turnaround_time = 0;
+  var total_waiting_time = 0;
+  var total_response_time = 0;
+  var total_idle_time = 0;
+  var throughput;
+  var is_completed = new Array(n); 
+     
+  is_completed.fill(0);
+  
+
+  var pid;
+  
+  
+  
+  var start_time=[];
+  var completion_time=[];
+  var turnaround_time=[];
+  var waiting_time=[];
+  var response_time=[];
+
+
+  
+
+  for (var i = 0; i < n; i++) {
+      at[i] = parseInt(at[i]);
+      bt[i] = parseInt(bt[i]);
+      priority[i]=parseInt(priority[i]);
+    }
+
+  var current_time = 0;
+  var completed = 0;
+  var prev = 0;
+  
+  while(completed != n) {
+
+
+
+
+      var idx = -1;
+      var mx = 10000;
+
+      for(var i = 0; i < n; i++) {
+          if(at[i] <= current_time && is_completed[i] == 0) {
+              if(priority[i] <mx) {
+                  mx = priority[i] ;
+                  idx = i;
+                
+              }
+              if(priority[i] == mx) {
+                  if(at[i] < at[idx]) {
+                      mx = priority[i] ;
+                      idx = i;
+                   
+                  }
+              }
+              rnk[i]=idx;
+            
+          }
+      }
+
+      if(idx != -1) {
+      
+         
+          
+         (start_time[idx]) = current_time;
+         (completion_time[idx])=parseInt(start_time[idx]) + bt[idx];
+         (turnaround_time[idx]) =parseInt(completion_time[idx]) - at[idx];
+         (waiting_time[idx]) = parseInt(turnaround_time[idx])- bt[idx];
+         (response_time[idx]) = parseInt(start_time[idx])  - at[idx];
+          
+          total_turnaround_time += parseInt(turnaround_time[idx]);
+          total_waiting_time += parseInt(waiting_time[idx]);
+          total_response_time +=  parseInt(response_time[idx]) ;
+          
+
+          is_completed[idx] = 1;
+          completed++;
+          current_time = parseInt(completion_time[idx]);
+         
+      }
+      else {
+          current_time++;
+      }
+     
+
+
+      avg_turnaround_time = total_turnaround_time / n;
+      avg_waiting_time = total_waiting_time / n;
+      avg_response_time =  total_response_time / n;
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  }
+
+
+
+  console.log(turnaround_time);
+  console.log(waiting_time);
+
+
+
+
+
+
+        
+      }
+
+      function gant(at, bt, ft, rank) {
+        var n = parseInt(document.getElementById("nop_input").value);
+        let myDiv = document.getElementById("ganttbox");
+        let myDiv2 = document.getElementById("ganttbox2");
+
+        var algo = algoInput[algoInput.selectedIndex].id;
+
+        while (myDiv.hasChildNodes()) {
+          if (myDiv.hasChildNodes()) {
+            myDiv.removeChild(myDiv.firstChild);
+          }
+        }
+
+        while (myDiv2.hasChildNodes()) {
+          if (myDiv2.hasChildNodes()) {
+            myDiv2.removeChild(myDiv2.firstChild);
+          }
+        }
+
+        for (var i = 0; i < n; i++) {
+          if (i == 0) {
+            var div1 = document.createElement("div");
+
+           
+            div1.innerHTML = "P" + rank[i];
+            
+
+
+            div1.id = "box1";
+            document.getElementById("ganttbox").appendChild(div1);
+          }
+
+          if (i >= 1) {
+            if (at[i] > ft[i - 1]) {
+              var div1 = document.createElement("div");
+            
+              div1.innerHTML = "-";
+              
+              
+          
+              div1.id = "box1";
+              document.getElementById("ganttbox").appendChild(div1);
+            }
+            var div1 = document.createElement("div");
+            
+            div1.innerHTML = "P" + rank[i];
+            
+           
+            div1.id = "box1";
+            document.getElementById("ganttbox").appendChild(div1);
+          }
+        }
+
+        for (var i = 0; i <= n; i++) {
+          var k = 0;
+
+          if (i == 0) {
+            var div2 = document.createElement("div");
+            div2.innerHTML = at[0];
+            div2.id = "box2";
+            document.getElementById("ganttbox2").appendChild(div2);
+          }
+          if (i >= 1) {
+            if (at[i] > ft[i - 1]) {
+              var div2 = document.createElement("div");
+              div2.innerHTML = ft[i - 1];
+              div2.id = "box2";
+              document.getElementById("ganttbox2").appendChild(div2);
+
+              var div2 = document.createElement("div");
+              div2.innerHTML = at[i];
+              div2.id = "box2";
+              document.getElementById("ganttbox2").appendChild(div2);
+              k = 1;
+            }
+            if (k == 0) {
+              var div2 = document.createElement("div");
+              div2.innerHTML = ft[i - 1];
+              div2.id = "box2";
+              document.getElementById("ganttbox2").appendChild(div2);
+            }
+          }
+        }
+      }
+
+      var Interval;
+      var s = 0;
+
+      function timerPart(at, bt, ft, rank) {
+        var n = parseInt(document.getElementById("nop_input").value);
+        let r1 = document.getElementById("readyQueue");
+        let r2 = document.getElementById("runningQueue");
+
+        let r3 = document.getElementById("runQueueProcess");
+
+        while (r1.hasChildNodes()) {
+          if (r1.hasChildNodes()) {
+            r1.removeChild(r1.firstChild);
+          }
+        }
+
+        while (r2.hasChildNodes()) {
+          if (r2.hasChildNodes()) {
+            r2.removeChild(r2.firstChild);
+          }
+        }
+
+        while (r3.hasChildNodes()) {
+          if (r3.hasChildNodes()) {
+            r3.removeChild(r3.firstChild);
+          }
+        }
+
+        Interval = setInterval(function () {
+          document.getElementById("cntdwn").innerHTML = s;
+
+          for (var i = 0; i < n; i++) {
+            if (s == at[i]) {
+              var rdiv1 = document.createElement("div");
+
+              rdiv1.id = "rbox1";
+              rdiv1.className = "rbox1";
+              document.getElementById("readyQueue").appendChild(rdiv1);
+              rdiv1.innerHTML = "P" + rank[i];
+            }
+          }
+
+          if (s == at[0]) {
+            var rdiv3 = document.createElement("div");
+
+            rdiv3.id = "rbox3";
+            document.getElementById("runQueueProcess").appendChild(rdiv3);
+            rdiv3.innerHTML = "P" + rank[0];
+
+            $(".rbox1").fadeOut(2000);
+          
+
+            // r1.removeChild(r1.firstChild);
+          }
+
+          for (var i = 1; i < n; i++) {
+            var f= 0;
+
+            if (at[i] > ft[i - 1]) {
+              if (s == ft[i - 1]) {
+                var rdiv3 = document.createElement("div");
+                rdiv3.className="rbox3";
+                rdiv3.id = "rbox3";
+                document.getElementById("runQueueProcess").appendChild(rdiv3);
+                rdiv3.innerHTML = "-";
+                f=1;
+                
+              }
+
+              if (s == at[i]) {
+                var rdiv3 = document.createElement("div");
+
+                rdiv3.id = "rbox3";
+                rdiv3.className="rbox3";
+            
+                document.getElementById("runQueueProcess").appendChild(rdiv3);
+                rdiv3.innerHTML = "P" + rank[i];
+                $(".rbox1").fadeOut(2000);
+               
+                
+              }
+            } else{
+
+              if (s == ft[i-1]) {
+                var rdiv3 = document.createElement("div");
+
+                rdiv3.id = "rbox3";
+                rdiv3.className="rbox3";
+                $(".rbox3").fadeIn(2000);
+                document.getElementById("runQueueProcess").appendChild(rdiv3);
+
+                rdiv3.innerHTML = "P" + rank[i];
+                $(".rbox1").fadeOut(2000);
+               
+                
+                
+              }
+
+            }
+
+
+              
+            
+            
+
+
+
+             
+        
+            //r1.removeChild(r1.firstChild);
+            //$(".rbox1").fadeOut(2000);
+          }
+          for (var i = 0; i <= n; i++) {
+            var k = 0;
+  
+            if (i == 0) {
+              if (s == at[0]) {
+                var rdiv2 = document.createElement("div");
+    
+                rdiv2.id = "rbox2";
+                rdiv2.className="rbox2";
+                document.getElementById("runningQueue").appendChild(rdiv2);
+                rdiv2.innerHTML = at[0];
+              }
+            }
+            if (i >= 1) {
+              if (at[i] > ft[i - 1]) {
+
+                if(s==ft[i-1]){
+
+                var rdiv2 = document.createElement("div");
+                rdiv2.className="rbox2";
+
+              rdiv2.id = "rbox2";
+              document.getElementById("runningQueue").appendChild(rdiv2);
+              rdiv2.innerHTML = ft[i-1];}
+  
+              if(s==at[i]){
+              var rdiv2 = document.createElement("div");
+              rdiv2.className="rbox2";
+              rdiv2.id = "rbox2";
+              document.getElementById("runningQueue").appendChild(rdiv2);
+              rdiv2.innerHTML = at[i];
+              }
+                k = 1;
+              }
+              if (k == 0) {
+
+                if(s==ft[i-1]){
+                var rdiv2 = document.createElement("div");
+                rdiv2.className="rbox2";
+                rdiv2.id = "rbox2";
+                document.getElementById("runningQueue").appendChild(rdiv2);
+                rdiv2.innerHTML = ft[i-1];
+                }
+              }
+            }
+          }
+
+          
+
+          
+
+          if (s <= ft[n - 1]) {
+            s++;
+          }
+        }, 3000);
+      }
+var count_t=0;
+      function fun() {
+        var algo = algoInput[algoInput.selectedIndex].id;
+
+        if (algo === "fcfs") {
+
+         
+         
+
+          
+          document.getElementById("card2").style.display = "block";
+
+         
+          
+      
+          
+
+          clearInterval(Interval);
+          s = 0;
+          calculate();
+        }
+        if (algo === "priority") {
+
+
+
+          document.getElementById("card2").style.display = "block";
+
+         
+          
+      
+          
+
+          clearInterval(Interval);
+          s = 0;
+          calculate();
+
+
+        }
+        if (algo === "priority_nonpre") {
+          document.getElementById("card2").style.display = "block";
+
+         
+          
+      
+          
+
+          clearInterval(Interval);
+          s = 0;
+          calculate();
+        
+        
+        
+        
+        }
+      }
+    </script>
+
+  </body>
+</html>
